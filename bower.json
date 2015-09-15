@@ -1,0 +1,29 @@
+{
+  "name": "yeoman-ui",
+  "main": "client/yeoman-ui.js",
+  "version": "1.0.0",
+  "authors": [
+    "Julien Cabanès <julien.c@icloud.com>"
+  ],
+  "description": "Yeoman UI made with Express, Socket.io, Angular & Bootstrap",
+  "keywords": [
+    "yeoman",
+    "scaffold",
+    "tool",
+    "web-app"
+  ],
+  "license": "BSD-2-Clause",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "client/bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "angular-sanitize": "~1.4.5",
+    "angular": "~1.4.5",
+    "bootstrap": "v4.0.0-alpha"
+  }
+}

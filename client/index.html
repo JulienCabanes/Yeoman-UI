@@ -1,0 +1,129 @@
+<!doctype html>
+<title>Yeoman UI</title>
+<link rel="stylesheet" href="/bower_components/bootstrap/dist/css/bootstrap.min.css">
+<body ng-app="app">
+
+<div class="modal-backdrop fade in"></div>
+<div class="modal fade in" style="display: block;" ng-controller="YoController as yoCtrl">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title text-center">Yeoman UI</h4>
+      </div>
+      <div class="modal-body">
+      
+        <div class="form-group">
+          <select
+            ng-model="yoCtrl.generator"
+            ng-options="gen as gen.name for gen in yoCtrl.generators | orderBy:'name'"
+            ng-change="yoCtrl.updateGenerator()"
+            class="form-control form-control-lg"
+            style="height: 3.25rem;"
+            yo-autofocus>
+            <option value="">Please choose a generator</option>
+          </select>
+        </div>
+        
+        <div class="form-group">
+          <select
+            ng-if="yoCtrl.generator.subgenerators.length > 1"
+            ng-model="yoCtrl.subgenerator"
+            ng-options="subgen as subgen.name for subgen in yoCtrl.generator.subgenerators | orderBy:'name'"
+            ng-change="yoCtrl.updateGenerator()"
+            class="form-control form-control-lg"
+            style="height: 3.25rem;"
+            yo-autofocus>
+            <option value="">Please choose a sub-generator</option>
+          </select>
+        </div>
+        
+        <div ng-if="yoCtrl.prompts.length">
+          <pre ng-bind-html="yoCtrl.logs" style="min-height: 40px;"></pre>
+          <hr/>
+          <form class="form-horizontal" name="yoForm" ng-submit="yoCtrl.submit()">
+            <div
+              class="form-group"
+              ng-class="{'has-error': prompt.error}"
+              ng-repeat="prompt in yoCtrl.prompts">
+              
+              <label
+                ng-if="prompt.type !== 'confirm'"
+                for="prompt"
+                ng-bind-html="prompt.message">
+              </label>
+
+              <div ng-if="prompt.type === 'list' || prompt.type === 'rawlist' || prompt.type === 'expand'">
+                <select
+                  id="prompt"
+                  ng-model="prompt.value"
+                  ng-options="choice.value as choice.name for choice in prompt.choices"
+                  class="form-control form-control-lg"
+                  style="height: 3.25rem;"
+                  yo-autofocus>
+                </select>
+              </div>
+              
+              <div ng-if="prompt.type === 'checkbox'">
+                <div
+                  ng-repeat="choice in prompt.choices"
+                  class="checkbox">
+                  <label>
+                    <input type="checkbox" ng-model="choice.checked"/>
+                    {{ choice.name }}
+                  </label>
+                </div>
+              </div>
+              
+              <div ng-if="prompt.type === 'confirm'">
+                <div class="checkbox">
+                  <label>
+                    <input type="checkbox" ng-model="prompt.value"/>
+                    <span ng-bind-html="prompt.message"></span>
+                  </label>
+                </div>
+              </div>
+
+              <div ng-if="prompt.type === 'input'">
+                <input
+                  id="prompt"
+                  ng-model="prompt.value"
+                  class="form-control form-control-lg"
+                  yo-autofocus>
+              </div>
+              
+              <div ng-if="prompt.type === 'password'">
+                <input
+                  ng-model="prompt.value"
+                  class="form-control form-control-lg"
+                  type="password"
+                  yo-autofocus>
+              </div>
+
+              <div
+                ng-if="prompt.error"
+                class="text-muted"
+                ng-class="{'text-danger': prompt.error}">
+                {{ prompt.error }}
+              </div>
+              
+              <!-- <pre>{{ prompt | json }}</pre> -->
+            </div>
+            
+            <div class="text-center">
+              <button type="submit" class="btn btn-primary btn-lg">OK</button>
+            </div>
+            
+          </form>
+        </div>
+        
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+<script src="/socket.io/socket.io.js"></script>
+<script src="/bower_components/angular/angular.min.js"></script>
+<script src="/bower_components/angular-sanitize/angular-sanitize.min.js"></script>
+<script src="/yeoman-ui.js"></script>
+<script src="/app.js"></script>

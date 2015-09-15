@@ -1,0 +1,25 @@
+{
+  "name": "yeoman-ui",
+  "version": "1.0.0",
+  "description": "Yeoman UI made with Express, Socket.io, Angular & Bootstrap",
+  "main": "lib/yeoman-ui.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Julien Cabanès <julien.c@icloud.com>",
+  "license": "BSD-2-Clause",
+  "dependencies": {
+    "ansi-to-html": "^0.3.0",
+    "archiver": "^0.15.1",
+    "autolinker": "^0.18.1",
+    "diff": "^2.1.1",
+    "express": "^4.13.3",
+    "lodash-node": "^3.10.1",
+    "node-uuid": "^1.4.3",
+    "rimraf": "^2.4.3",
+    "shortid": "^2.2.2",
+    "socket.io": "^1.3.6",
+    "striptags": "^2.0.3",
+    "yeoman-environment": "^1.2.7"
+  }
+}
