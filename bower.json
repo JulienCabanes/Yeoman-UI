@@ -24,6 +24,6 @@
   "dependencies": {
     "angular-sanitize": "~1.4.5",
     "angular": "~1.4.5",
-    "bootstrap": "v4.0.0-alpha"
+    "bootstrap": "^3.3.7"
   }
 }
