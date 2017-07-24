@@ -111,6 +111,10 @@
     });
 
     socket.on('yo:log', function(logs) {
+      var element = document.getElementById("logs");
+      var oldLog = element.innerHTML;
+      element.innerHTML = (oldLog ? oldLog : "") + "\n\n" + logs;
+      element.scrollTop = element.scrollHeight;
       self.logs = $sce.trustAsHtml(logs);
       self.scopeApply();
     });
