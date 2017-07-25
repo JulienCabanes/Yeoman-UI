@@ -2,9 +2,9 @@
   "name": "yeoman-ui",
   "version": "1.0.0",
   "description": "Yeoman UI made with Express, Socket.io, Angular & Bootstrap",
-  "main": "lib/yeoman-ui.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js"
   },
   "author": "Julien Cabanès <julien.c@icloud.com>",
   "license": "BSD-2-Clause",
