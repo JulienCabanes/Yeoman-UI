@@ -100,7 +100,8 @@
     socket.emit('yo:list');
 
     socket.on('yo:prompt', function(prompt) {
-      self.prompts = [prompt].map(yoNormalizePrompt);
+      self.prompts.push(yoNormalizePrompt(prompt));
+      self.activePromptIndex++;
 
       self.scopeApply();
     });
@@ -161,13 +162,14 @@
 
     function _submit() {
       socket.emit('yo:prompt', {
-        question: self.prompts[0],
-        answer: yoNormalizeAnswer(self.prompts[0])
+        question: self.prompts[self.activePromptIndex],
+        answer: yoNormalizeAnswer(self.prompts[self.activePromptIndex])
       });
     }
 
     function _reset() {
       self.prompts = [];
+      self.activePromptIndex = -1;
       self.diffs = [];
       self.logs = [];
     }
