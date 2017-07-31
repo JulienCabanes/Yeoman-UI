@@ -1,129 +1,252 @@
 <!doctype html>
-<title>Yeoman UI</title>
-<link rel="stylesheet" href="/bower_components/bootstrap/dist/css/bootstrap.min.css">
-<body ng-app="app">
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="">
+  <meta name="author" content="">
+  <link rel="icon" href="../../favicon.ico">
+  <title>Yeoman UI</title>
+  <link rel="stylesheet" href="./bower_components/bootstrap/dist/css/bootstrap.min.css"/>
+  <style>
+    .command-line {
+      color: black;
+      background: white;
+      overflow: auto;
+      padding: 16px;
+      height: 100%;
+      border: none;
+    }
 
-<div class="modal-backdrop fade in"></div>
-<div class="modal fade in" style="display: block;" ng-controller="YoController as yoCtrl">
-  <div class="modal-dialog modal-lg">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h4 class="modal-title text-center">Yeoman UI</h4>
+    .command-line pre {
+      color: white;
+      height: 100%;
+      margin: 0px;
+      background-color: black;
+      border: none;
+      box-shadow: 0px 0px 3px 1px rgba(255, 255, 255, 0.23);
+    }
+
+    body {
+      padding-top: 50px;
+    }
+
+    .generator-selection {
+      padding-top: 20px;
+      background-color: white;
+    }
+
+    .generator-questions {
+      padding: 0px;
+      height: calc(100% - 50px);
+      position: absolute;
+    }
+
+    .generator-question-prompts {
+      overflow: auto;
+      background-color: white;
+      padding: 30px;
+      height: 100%;
+    }
+
+    .command-line pre::-webkit-scrollbar {
+      width: 9px;
+      height: 9px;
+      background-color: #000000;
+    }
+
+    .command-line pre::-webkit-scrollbar-thumb {
+      border-radius: 0px;
+      background-color: rgba(255, 255, 255, 0.16);
+    }
+
+    .command-line pre::-webkit-scrollbar-track {
+      border-radius: 0px;
+      background-color: #000000;
+    }
+
+    .generator-question-prompt {
+      border-left: 4px solid #4CAF50;
+      background-color: rgba(76, 175, 80, 0.05);
+      padding-bottom: 5px;
+      padding-top: 5px;
+    }
+
+    .generator-question-prompt label {
+      font-size: 12px;
+    }
+
+    .generator-question-prompt-disabled {
+      border-left: 4px solid #e1e1e1;
+      background-color: rgba(238, 238, 238, 0.31);
+      padding-bottom: 5px;
+      padding-top: 5px;
+    }
+
+
+    /**
+    #########################################################
+    Extracted from https://www.bootply.com/128062
+
+    TODO remove and add font awesome
+    #########################################################
+     */
+    .glyphicon-refresh-animate {
+      -animation: spin .7s infinite linear;
+      -webkit-animation: spin2 .7s infinite linear;
+    }
+
+    @-webkit-keyframes spin2 {
+      from { -webkit-transform: rotate(0deg);}
+      to { -webkit-transform: rotate(360deg);}
+    }
+
+    @keyframes spin {
+      from { transform: scale(1) rotate(0deg);}
+      to { transform: scale(1) rotate(360deg);}
+    }
+    /**
+    #########################################################
+     */
+  </style>
+</head>
+
+
+<body ng-app="app" ng-controller="YoController as yoCtrl" data-gr-c-s-loaded="true">
+
+<nav class="navbar navbar-default navbar-fixed-top">
+  <div class="container">
+    <div class="navbar-header">
+      <a class="navbar-brand" href="#">Yeoman UI</a>
+    </div>
+  </div>
+</nav>
+
+
+
+<div class="col-lg-12 generator-questions">
+  <div class="col-lg-6 generator-question-prompts">
+
+    <div class="col-lg-12 generator-selection">
+      <div class="col-lg-12 generator-question-prompt form-group"
+           ng-class="{'has-error': prompt.error, 'generator-question-prompt-disabled': yoCtrl.generator}">
+        <select
+          ng-model="yoCtrl.generator"
+          ng-options="gen as gen.name for gen in yoCtrl.generators | orderBy:'name'"
+          ng-change="yoCtrl.updateGenerator()"
+          class="form-control form-control-lg"
+          yo-autofocus>
+          <option value="">Please choose a generator</option>
+        </select>
       </div>
-      <div class="modal-body">
-      
-        <div class="form-group">
-          <select
-            ng-model="yoCtrl.generator"
-            ng-options="gen as gen.name for gen in yoCtrl.generators | orderBy:'name'"
-            ng-change="yoCtrl.updateGenerator()"
-            class="form-control form-control-lg"
-            style="height: 3.25rem;"
-            yo-autofocus>
-            <option value="">Please choose a generator</option>
-          </select>
-        </div>
-        
-        <div class="form-group">
-          <select
-            ng-if="yoCtrl.generator.subgenerators.length > 1"
-            ng-model="yoCtrl.subgenerator"
-            ng-options="subgen as subgen.name for subgen in yoCtrl.generator.subgenerators | orderBy:'name'"
-            ng-change="yoCtrl.updateGenerator()"
-            class="form-control form-control-lg"
-            style="height: 3.25rem;"
-            yo-autofocus>
-            <option value="">Please choose a sub-generator</option>
-          </select>
-        </div>
-        
-        <div ng-if="yoCtrl.prompts.length">
-          <pre ng-bind-html="yoCtrl.logs" style="min-height: 40px;"></pre>
-          <hr/>
-          <form class="form-horizontal" name="yoForm" ng-submit="yoCtrl.submit()">
-            <div
-              class="form-group"
-              ng-class="{'has-error': prompt.error}"
-              ng-repeat="prompt in yoCtrl.prompts">
-              
-              <label
-                ng-if="prompt.type !== 'confirm'"
-                for="prompt"
-                ng-bind-html="prompt.message">
-              </label>
-
-              <div ng-if="prompt.type === 'list' || prompt.type === 'rawlist' || prompt.type === 'expand'">
-                <select
-                  id="prompt"
-                  ng-model="prompt.value"
-                  ng-options="choice.value as choice.name for choice in prompt.choices"
-                  class="form-control form-control-lg"
-                  style="height: 3.25rem;"
-                  yo-autofocus>
-                </select>
-              </div>
-              
-              <div ng-if="prompt.type === 'checkbox'">
-                <div
-                  ng-repeat="choice in prompt.choices"
-                  class="checkbox">
-                  <label>
-                    <input type="checkbox" ng-model="choice.checked"/>
-                    {{ choice.name }}
-                  </label>
-                </div>
-              </div>
-              
-              <div ng-if="prompt.type === 'confirm'">
-                <div class="checkbox">
-                  <label>
-                    <input type="checkbox" ng-model="prompt.value"/>
-                    <span ng-bind-html="prompt.message"></span>
-                  </label>
-                </div>
-              </div>
-
-              <div ng-if="prompt.type === 'input'">
-                <input
-                  id="prompt"
-                  ng-model="prompt.value"
-                  class="form-control form-control-lg"
-                  yo-autofocus>
-              </div>
-              
-              <div ng-if="prompt.type === 'password'">
-                <input
-                  ng-model="prompt.value"
-                  class="form-control form-control-lg"
-                  type="password"
-                  yo-autofocus>
-              </div>
-
-              <div
-                ng-if="prompt.error"
-                class="text-muted"
-                ng-class="{'text-danger': prompt.error}">
-                {{ prompt.error }}
-              </div>
-              
-              <!-- <pre>{{ prompt | json }}</pre> -->
-            </div>
-            
-            <div class="text-center">
-              <button type="submit" class="btn btn-primary btn-lg">OK</button>
-            </div>
-            
-          </form>
-        </div>
-        
+      <div class="col-lg-12 generator-question-prompt form-group"
+           ng-if="yoCtrl.generator.subgenerators.length > 1"
+           ng-class="{'has-error': prompt.error, 'generator-question-prompt-disabled': yoCtrl.subgenerator}">
+        <select
+          ng-model="yoCtrl.subgenerator"
+          ng-options="subgen as subgen.name for subgen in yoCtrl.generator.subgenerators | orderBy:'name'"
+          ng-change="yoCtrl.updateGenerator()"
+          class="form-control form-control-lg"
+          yo-autofocus>
+          <option value="">Please choose a sub-generator</option>
+        </select>
       </div>
     </div>
+
+
+    <form class="col-lg-12" name="yoForm" ng-submit="yoCtrl.submit()">
+
+      <div
+        class="col-lg-12 generator-question-prompt form-group form-group-sm"
+        ng-class="{'has-error': prompt.error, 'generator-question-prompt-disabled': prompt.isDisabled}"
+        ng-repeat="prompt in yoCtrl.prompts">
+        <label
+          ng-if="prompt.type !== 'confirm'"
+          for="prompt"
+          ng-bind-html="prompt.message">
+        </label>
+
+        <div ng-if="prompt.type === 'list' || prompt.type === 'rawlist' || prompt.type === 'expand'">
+          <select
+            id="prompt"
+            ng-disabled="prompt.isDisabled"
+            ng-model="prompt.value"
+            ng-options="choice.value as choice.name for choice in prompt.choices"
+            class="form-control form-control-lg"
+            yo-autofocus>
+          </select>
+        </div>
+
+        <div ng-if="prompt.type === 'checkbox'">
+          <div
+            ng-repeat="choice in prompt.choices"
+            class="checkbox">
+            <label>
+              <input type="checkbox" ng-model="choice.checked" ng-disabled="prompt.isDisabled"/>
+              {{ choice.name }}
+            </label>
+          </div>
+        </div>
+
+        <div ng-if="prompt.type === 'confirm'">
+          <div class="checkbox">
+            <label>
+              <input type="checkbox" ng-model="prompt.value" ng-disabled="prompt.isDisabled"/>
+              <span ng-bind-html="prompt.message"></span>
+            </label>
+          </div>
+        </div>
+
+        <div ng-if="prompt.type === 'input'">
+          <input
+            ng-disabled="prompt.isDisabled"
+            id="prompt"
+            ng-model="prompt.value"
+            class="form-control form-control-lg"
+            yo-autofocus>
+        </div>
+
+        <div ng-if="prompt.type === 'password'">
+          <input
+            ng-disabled="prompt.isDisabled"
+            ng-model="prompt.value"
+            class="form-control form-control-lg"
+            type="password"
+            yo-autofocus>
+        </div>
+
+        <div
+          ng-if="prompt.error"
+          class="text-muted"
+          ng-class="{'text-danger': prompt.error}">
+          {{ prompt.error }}
+        </div>
+
+        <!-- <pre>{{ prompt | json }}</pre> -->
+      </div>
+
+      <div ng-if="yoCtrl.isWaiting()">Processing ...............</div>
+
+      <div>
+        <button type="submit" class="btn btn-primary" ng-disabled="yoCtrl.isWaiting()">
+          <span ng-if="yoCtrl.isWaiting()" class="glyphicon glyphicon-refresh glyphicon-refresh-animate"></span> OK
+        </button>
+      </div>
+
+    </form>
+  </div>
+  <div class="col-lg-6 command-line">
+    <pre id="logs" class="col-lg-12"></pre>
   </div>
 </div>
 
 </body>
+<script src="./bower_components/jquery/dist/jquery.min.js"></script>
+<script src="./bower_components/tether/dist/js/tether.min.js"></script>
+<script src="./bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
 <script src="/socket.io/socket.io.js"></script>
 <script src="/bower_components/angular/angular.min.js"></script>
 <script src="/bower_components/angular-sanitize/angular-sanitize.min.js"></script>
 <script src="/yeoman-ui.js"></script>
 <script src="/app.js"></script>
+</html>

@@ -89,6 +89,7 @@
     self.submit = _submit;
     self.reset = _reset;
     self.scopeApply = _scopeApply;
+    self.isWaiting = _isWaiting;
 
     self.reset();
 
@@ -100,7 +101,12 @@
     socket.emit('yo:list');
 
     socket.on('yo:prompt', function(prompt) {
-      self.prompts = [prompt].map(yoNormalizePrompt);
+      self.prompts.filter(function (prompt) {
+        prompt.isDisabled = true;
+      });
+      prompt.isDisabled = false;
+      self.activePromptIndex = self.prompts.length;
+      self.prompts.push(yoNormalizePrompt(prompt));
 
       self.scopeApply();
     });
@@ -111,6 +117,10 @@
     });
 
     socket.on('yo:log', function(logs) {
+      var element = document.getElementById("logs");
+      var oldLog = element.innerHTML;
+      element.innerHTML = (oldLog ? oldLog : "") + "\n\n" + logs;
+      element.scrollTop = element.scrollHeight;
       self.logs = $sce.trustAsHtml(logs);
       self.scopeApply();
     });
@@ -156,14 +166,16 @@
     }
 
     function _submit() {
+      self.prompts[self.activePromptIndex].isDisabled = true;
       socket.emit('yo:prompt', {
-        question: self.prompts[0],
-        answer: yoNormalizeAnswer(self.prompts[0])
+        question: self.prompts[self.activePromptIndex],
+        answer: yoNormalizeAnswer(self.prompts[self.activePromptIndex])
       });
     }
 
     function _reset() {
       self.prompts = [];
+      self.activePromptIndex = -1;
       self.diffs = [];
       self.logs = [];
     }
@@ -172,6 +184,10 @@
       if (!$scope.$$phase) {
         $scope.$apply();
       }
+    }
+
+    function _isWaiting() {
+      return self.prompts.filter(function (p1) { return !p1.isDisabled; }).length <= 0;
     }
   }
 })();
