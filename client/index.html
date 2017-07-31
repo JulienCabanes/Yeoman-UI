@@ -82,6 +82,32 @@
       padding-bottom: 5px;
       padding-top: 5px;
     }
+
+
+    /**
+    #########################################################
+    Extracted from https://www.bootply.com/128062
+
+    TODO remove and add font awesome
+    #########################################################
+     */
+    .glyphicon-refresh-animate {
+      -animation: spin .7s infinite linear;
+      -webkit-animation: spin2 .7s infinite linear;
+    }
+
+    @-webkit-keyframes spin2 {
+      from { -webkit-transform: rotate(0deg);}
+      to { -webkit-transform: rotate(360deg);}
+    }
+
+    @keyframes spin {
+      from { transform: scale(1) rotate(0deg);}
+      to { transform: scale(1) rotate(360deg);}
+    }
+    /**
+    #########################################################
+     */
   </style>
 </head>
 
@@ -96,37 +122,43 @@
   </div>
 </nav>
 
-<div class="col-lg-12 generator-selection" ng-if="!yoCtrl.generator || !yoCtrl.subgenerator">
-  <div class="form-group">
-    <select
-      ng-model="yoCtrl.generator"
-      ng-options="gen as gen.name for gen in yoCtrl.generators | orderBy:'name'"
-      ng-change="yoCtrl.updateGenerator()"
-      class="form-control form-control-lg"
-      yo-autofocus>
-      <option value="">Please choose a generator</option>
-    </select>
-  </div>
-  <div class="form-group">
-    <select
-      ng-if="yoCtrl.generator.subgenerators.length > 1"
-      ng-model="yoCtrl.subgenerator"
-      ng-options="subgen as subgen.name for subgen in yoCtrl.generator.subgenerators | orderBy:'name'"
-      ng-change="yoCtrl.updateGenerator()"
-      class="form-control form-control-lg"
-      yo-autofocus>
-      <option value="">Please choose a sub-generator</option>
-    </select>
-  </div>
-</div>
 
-<div class="col-lg-12 generator-questions" ng-if="yoCtrl.generator && yoCtrl.subgenerator">
+
+<div class="col-lg-12 generator-questions">
   <div class="col-lg-6 generator-question-prompts">
+
+    <div class="col-lg-12 generator-selection">
+      <div class="col-lg-12 generator-question-prompt form-group"
+           ng-class="{'has-error': prompt.error, 'generator-question-prompt-disabled': yoCtrl.generator}">
+        <select
+          ng-model="yoCtrl.generator"
+          ng-options="gen as gen.name for gen in yoCtrl.generators | orderBy:'name'"
+          ng-change="yoCtrl.updateGenerator()"
+          class="form-control form-control-lg"
+          yo-autofocus>
+          <option value="">Please choose a generator</option>
+        </select>
+      </div>
+      <div class="col-lg-12 generator-question-prompt form-group"
+           ng-if="yoCtrl.generator.subgenerators.length > 1"
+           ng-class="{'has-error': prompt.error, 'generator-question-prompt-disabled': yoCtrl.subgenerator}">
+        <select
+          ng-model="yoCtrl.subgenerator"
+          ng-options="subgen as subgen.name for subgen in yoCtrl.generator.subgenerators | orderBy:'name'"
+          ng-change="yoCtrl.updateGenerator()"
+          class="form-control form-control-lg"
+          yo-autofocus>
+          <option value="">Please choose a sub-generator</option>
+        </select>
+      </div>
+    </div>
+
+
     <form class="col-lg-12" name="yoForm" ng-submit="yoCtrl.submit()">
 
       <div
         class="col-lg-12 generator-question-prompt form-group form-group-sm"
-        ng-class="{'has-error': prompt.error, 'generator-question-prompt-disabled': yoCtrl.activePromptIndex !== $index}"
+        ng-class="{'has-error': prompt.error, 'generator-question-prompt-disabled': prompt.isDisabled}"
         ng-repeat="prompt in yoCtrl.prompts">
         <label
           ng-if="prompt.type !== 'confirm'"
@@ -137,7 +169,7 @@
         <div ng-if="prompt.type === 'list' || prompt.type === 'rawlist' || prompt.type === 'expand'">
           <select
             id="prompt"
-            ng-disabled="yoCtrl.activePromptIndex !== $index"
+            ng-disabled="prompt.isDisabled"
             ng-model="prompt.value"
             ng-options="choice.value as choice.name for choice in prompt.choices"
             class="form-control form-control-lg"
@@ -150,7 +182,7 @@
             ng-repeat="choice in prompt.choices"
             class="checkbox">
             <label>
-              <input type="checkbox" ng-model="choice.checked" ng-disabled="yoCtrl.activePromptIndex !== $index"/>
+              <input type="checkbox" ng-model="choice.checked" ng-disabled="prompt.isDisabled"/>
               {{ choice.name }}
             </label>
           </div>
@@ -159,7 +191,7 @@
         <div ng-if="prompt.type === 'confirm'">
           <div class="checkbox">
             <label>
-              <input type="checkbox" ng-model="prompt.value" ng-disabled="yoCtrl.activePromptIndex !== $index"/>
+              <input type="checkbox" ng-model="prompt.value" ng-disabled="prompt.isDisabled"/>
               <span ng-bind-html="prompt.message"></span>
             </label>
           </div>
@@ -167,7 +199,7 @@
 
         <div ng-if="prompt.type === 'input'">
           <input
-            ng-disabled="yoCtrl.activePromptIndex !== $index"
+            ng-disabled="prompt.isDisabled"
             id="prompt"
             ng-model="prompt.value"
             class="form-control form-control-lg"
@@ -176,7 +208,7 @@
 
         <div ng-if="prompt.type === 'password'">
           <input
-            ng-disabled="yoCtrl.activePromptIndex !== $index"
+            ng-disabled="prompt.isDisabled"
             ng-model="prompt.value"
             class="form-control form-control-lg"
             type="password"
@@ -193,8 +225,12 @@
         <!-- <pre>{{ prompt | json }}</pre> -->
       </div>
 
+      <div ng-if="yoCtrl.isWaiting()">Processing ...............</div>
+
       <div>
-        <button type="submit" class="btn btn-primary">OK</button>
+        <button type="submit" class="btn btn-primary" ng-disabled="yoCtrl.isWaiting()">
+          <span ng-if="yoCtrl.isWaiting()" class="glyphicon glyphicon-refresh glyphicon-refresh-animate"></span> OK
+        </button>
       </div>
 
     </form>

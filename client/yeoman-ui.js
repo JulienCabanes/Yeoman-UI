@@ -89,6 +89,7 @@
     self.submit = _submit;
     self.reset = _reset;
     self.scopeApply = _scopeApply;
+    self.isWaiting = _isWaiting;
 
     self.reset();
 
@@ -100,8 +101,12 @@
     socket.emit('yo:list');
 
     socket.on('yo:prompt', function(prompt) {
+      self.prompts.filter(function (prompt) {
+        prompt.isDisabled = true;
+      });
+      prompt.isDisabled = false;
+      self.activePromptIndex = self.prompts.length;
       self.prompts.push(yoNormalizePrompt(prompt));
-      self.activePromptIndex++;
 
       self.scopeApply();
     });
@@ -161,6 +166,7 @@
     }
 
     function _submit() {
+      self.prompts[self.activePromptIndex].isDisabled = true;
       socket.emit('yo:prompt', {
         question: self.prompts[self.activePromptIndex],
         answer: yoNormalizeAnswer(self.prompts[self.activePromptIndex])
@@ -178,6 +184,10 @@
       if (!$scope.$$phase) {
         $scope.$apply();
       }
+    }
+
+    function _isWaiting() {
+      return self.prompts.filter(function (p1) { return !p1.isDisabled; }).length <= 0;
     }
   }
 })();
